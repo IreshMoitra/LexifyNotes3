@@ -1,10 +1,22 @@
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
+from flask import Flask
+
 load_dotenv()
 
 client = OpenAI(api_key=os.getenv('OPEN_AI_API_KEY'))
 
+
+# Initialize Flask app
+app = Flask(__name__)
+
+# Define a route
+@app.route('/')
+
+# Run the app
+if __name__ == '__main__':
+    app.run(debug=True)
 def createKeyPoints(prompt):
   response = client.chat.completions.create(
       model="gpt-4-turbo",
@@ -111,3 +123,33 @@ Siege and Defense Preparations: In February 1836, Mexican General Antonio López
 The 13-Day Siege: Santa Anna's forces laid siege to the Alamo for 13 days, bombarding it with artillery fire and cutting off supplies. Despite the overwhelming odds, the Texan defenders held their ground. Tensions escalated as Mexican troops prepared for a final assault.
 The Final Assault and Fall of the Alamo: On March 6, 1836, in a pre-dawn attack, Santa Anna's army stormed the Alamo. The Texans fought fiercely but were overwhelmed. Almost all the defenders, including Bowie, Travis, and Crockett, were killed in the assault, with only a few non-combatants surviving.
 Aftermath and Legacy: The fall of the Alamo became a rallying cry for Texan independence: "Remember the Alamo!" Just over a month later, Sam Houston led Texan forces to victory at the Battle of San Jacinto, securing Texas' independence from Mexico. The Alamo remains a symbol of courage, sacrifice, and the Texan spirit, honored in historical reenactments, museums, and cultural narratives.""")
+
+def createFlashcards(prompt):
+  response = client.chat.completions.create(
+    model="gpt-4-turbo",
+    messages=[{
+       "role": 'system',
+       "content": """You are an ai assistant that makes different informational flashcards relating to the prompt the user has given. You will format the flashcards like this:
+       Flashcard 1
+       Key Points about topic
+
+       Flashcard 2
+       Key Points about topic
+
+       Flashcard 3
+       Key Points about topic
+
+       Flashcard 4
+       Key Points about topic
+
+       Flashcard 5 
+       Key Points about topic """    
+      }, {
+        "role": 'user',
+        "content": prompt
+      },],
+      max_tokens=500,
+)
+
+  print(response.choices[0].message.content)
+  return(response.choices[0].message.content)
