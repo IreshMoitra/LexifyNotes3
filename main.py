@@ -8,15 +8,7 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv('OPEN_AI_API_KEY'))
 
 
-# Initialize Flask app
-app = Flask(__name__)
 
-# Define a route
-@app.route('/')
-
-# Run the app
-if __name__ == '__main__':
-    app.run(debug=True)
 def createKeyPoints(prompt):
   response = client.chat.completions.create(
       model="gpt-4-turbo",
@@ -118,11 +110,6 @@ def createQuestions(prompt):
   print(response.choices[0].message.content)
   return(response.choices[0].message.content)
 
-createQuestions("""Background and Tensions: The Alamo, a mission-turned-fortress in San Antonio, Texas, was central to the Texas Revolution against Mexico. In the 1820s and 1830s, many American settlers moved to Mexican Texas, bringing cultural tensions between them and the Mexican government. The settlers sought more autonomy, culminating in the Texas Revolution in 1835.
-Siege and Defense Preparations: In February 1836, Mexican General Antonio López de Santa Anna led a large army into Texas to crush the rebellion. Approximately 200 Texan defenders, including prominent figures like James Bowie, William B. Travis, and Davy Crockett, fortified the Alamo. They knew they were outnumbered, but they hoped reinforcements would arrive.
-The 13-Day Siege: Santa Anna's forces laid siege to the Alamo for 13 days, bombarding it with artillery fire and cutting off supplies. Despite the overwhelming odds, the Texan defenders held their ground. Tensions escalated as Mexican troops prepared for a final assault.
-The Final Assault and Fall of the Alamo: On March 6, 1836, in a pre-dawn attack, Santa Anna's army stormed the Alamo. The Texans fought fiercely but were overwhelmed. Almost all the defenders, including Bowie, Travis, and Crockett, were killed in the assault, with only a few non-combatants surviving.
-Aftermath and Legacy: The fall of the Alamo became a rallying cry for Texan independence: "Remember the Alamo!" Just over a month later, Sam Houston led Texan forces to victory at the Battle of San Jacinto, securing Texas' independence from Mexico. The Alamo remains a symbol of courage, sacrifice, and the Texan spirit, honored in historical reenactments, museums, and cultural narratives.""")
 
 def createFlashcards(prompt):
   response = client.chat.completions.create(
@@ -131,19 +118,25 @@ def createFlashcards(prompt):
        "role": 'system',
        "content": """You are an ai assistant that makes different informational flashcards relating to the prompt the user has given. You will format the flashcards like this:
        Flashcard 1
-       Key Points about topic
+       Front of card: Question about topic
+       Back of card: Answer
 
        Flashcard 2
-       Key Points about topic
+        Front of card: Question about topic
+        Back of card: Answer
 
-       Flashcard 3
-       Key Points about topic
+      Flashcard 3
+       Front of card: Question about topic
+       Back of card: Answer
 
-       Flashcard 4
-       Key Points about topic
+      Flashcard 4
+       Front of card: Question about topic
+       Back of card: Answer
 
-       Flashcard 5 
-       Key Points about topic """    
+      Flashcard 5
+       Front of card: Question about topic
+       Back of card: Answer
+       """    
       }, {
         "role": 'user',
         "content": prompt
@@ -153,3 +146,27 @@ def createFlashcards(prompt):
 
   print(response.choices[0].message.content)
   return(response.choices[0].message.content)
+
+
+@app.route('/definitions', methods = ['POST', 'GET'])
+def Server_Def:
+    transcript = request.form.get('transcript')
+    return createDefinitions(transcript)
+
+@app.route('/questions', methods = ['POST', 'GET'])
+def Server_Def:
+    transcript = request.form.get('transcript')
+    return createQuestions(transcript)
+
+@app.route('/keypoints', methods = ['POST', 'GET'])
+def Server_Def:
+    transcript = request.form.get('transcript')
+    return createKeyPoints(transcript)
+
+@app.route('/flashcards', methods = ['POST', 'GET'])
+def Server_Def:
+    transcript = request.form.get('transcript')
+    return createFlashcards(transcript)
+
+if __name__ = "__main__":
+    app.run(debug=True, port=5000)
